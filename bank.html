@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>PNG와 특정 말 감지</title>
+  <style>
+    #png {
+      width: 300px;
+      margin-top: 20px;
+    }
+    #status {
+      margin-top: 10px;
+      color: blue;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>PNG와 특정 말 감지</h1>
+  <p>아래 PNG를 보며 마이크에 "이게 뭐야"라고 말하세요.</p>
+  <!-- 교체될 이미지 -->
+  <img src="talk.png" alt="A 이미지" id="png">
+  <div id="status">대기 중...</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'ko-KR';
+
+      recognition.onstart = () => {
+        document.getElementById('status').innerText = '듣는 중...';
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('status').innerText = `인식된 텍스트: ${transcript}`;
+
+        if (transcript.includes('이게 뭐야')) {
+          console.log('"이게 뭐야" 감지됨! 이미지를 교체합니다.');
+          // 이미지 교체
+          const image = document.getElementById('png');
+          image.src = 'result.png';
+        }
+      };
+
+      recognition.onerror = (event) => {
+        document.getElementById('status').innerText = '오류 발생: 다시 시도하세요.';
+      };
+
+      document.body.onclick = () => {
+        recognition.start();
+      };
+    });
+  </script>
+</body>
+</html>
